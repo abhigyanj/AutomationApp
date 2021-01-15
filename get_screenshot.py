@@ -3,6 +3,7 @@ import pyautogui
 
 import datetime
 
+
 class Application():
     def __init__(self, master, name):
         self.master = master
@@ -23,13 +24,13 @@ class Application():
         self.menu_frame = Frame(master, bg="blue")
         self.menu_frame.pack(fill=BOTH, expand=YES)
 
-        self.buttonBar = Frame(self.menu_frame,bg="")
-        self.buttonBar.pack(fill=BOTH,expand=YES)
+        self.buttonBar = Frame(self.menu_frame, bg="")
+        self.buttonBar.pack(fill=BOTH, expand=YES)
 
         self.master_screen = Toplevel(self.master)
         self.master_screen.withdraw()
         self.master_screen.attributes("-transparent", "blue")
-        self.picture_frame = Frame(self.master_screen, background = "blue")
+        self.picture_frame = Frame(self.master_screen, background="blue")
         self.picture_frame.pack(fill=BOTH, expand=YES)
 
         self.createScreenCanvas()
@@ -42,7 +43,8 @@ class Application():
         self.master_screen.deiconify()
         self.master.withdraw()
 
-        self.screenCanvas = Canvas(self.picture_frame, cursor="cross", bg="grey11")
+        self.screenCanvas = Canvas(
+            self.picture_frame, cursor="cross", bg="grey11")
         self.screenCanvas.pack(fill=BOTH, expand=YES)
 
         self.screenCanvas.bind("<ButtonPress-1>", self.on_button_press)
@@ -57,16 +59,20 @@ class Application():
     def on_button_release(self, event):
         try:
             if self.start_x <= self.curX and self.start_y <= self.curY:
-                self.takeBoundedScreenShot(self.start_x, self.start_y, self.curX - self.start_x, self.curY - self.start_y)
+                self.takeBoundedScreenShot(
+                    self.start_x, self.start_y, self.curX - self.start_x, self.curY - self.start_y)
 
             elif self.start_x >= self.curX and self.start_y <= self.curY:
-                self.takeBoundedScreenShot(self.curX, self.start_y, self.start_x - self.curX, self.curY - self.start_y)
+                self.takeBoundedScreenShot(
+                    self.curX, self.start_y, self.start_x - self.curX, self.curY - self.start_y)
 
             elif self.start_x <= self.curX and self.start_y >= self.curY:
-                self.takeBoundedScreenShot(self.start_x, self.curY, self.curX - self.start_x, self.start_y - self.curY)
+                self.takeBoundedScreenShot(
+                    self.start_x, self.curY, self.curX - self.start_x, self.start_y - self.curY)
 
             elif self.start_x >= self.curX and self.start_y >= self.curY:
-                self.takeBoundedScreenShot(self.curX, self.curY, self.start_x - self.curX, self.start_y - self.curY)
+                self.takeBoundedScreenShot(
+                    self.curX, self.curY, self.start_x - self.curX, self.start_y - self.curY)
         except TypeError as e:
             print(e)
         else:
@@ -87,15 +93,17 @@ class Application():
         self.start_x = self.screenCanvas.canvasx(event.x)
         self.start_y = self.screenCanvas.canvasy(event.y)
 
-        self.rect = self.screenCanvas.create_rectangle(self.x, self.y, 1, 1, fill="blue")
+        self.rect = self.screenCanvas.create_rectangle(
+            self.x, self.y, 1, 1, fill="blue")
 
     def on_move_press(self, event):
         self.curX, self.curY = (event.x, event.y)
         # expand rectangle as you drag the mouse
-        self.screenCanvas.coords(self.rect, self.start_x, self.start_y, self.curX, self.curY)
+        self.screenCanvas.coords(
+            self.rect, self.start_x, self.start_y, self.curX, self.curY)
+
 
 if __name__ == '__main__':
     root = Tk()
     app = Application(root)
     root.mainloop()
-
