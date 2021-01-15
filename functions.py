@@ -9,7 +9,7 @@ from pyclick.humancurve import HumanCurve
 
 from PIL import ImageGrab
 
-# pyautogui.FAILSAFE = False
+pyautogui.FAILSAFE = False
 
 def generateRandomNumber(start, end):
     return random.randint(start, end)
