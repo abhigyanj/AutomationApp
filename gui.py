@@ -45,177 +45,184 @@ class App:
         file = asksaveasfilename(
             initialdir="./saves/", filetypes=[("Automation App Files", "*.aafiles")])
 
-        if (not file == "") and (not file.endswith(".aafiles")):
-            file = f"{file}.aafiles"
+        if not file == "":
+            if not file.endswith(".aafiles"):
+                file = f"{file}.aafiles"
 
-        open(file, 'w').close()
+            open(file, 'w').close()
 
-        clses = list(filter(lambda item: item.startswith("cls"), dir(self)))
-        ifdrop = list(
-            filter(lambda item: item.startswith("clickedif"), dir(self)))
-        optionsdrop = list(filter(lambda item: item.startswith(
-            "clicked") and "if" not in item, dir(self)))
+            clses = list(
+                filter(lambda item: item.startswith("cls"), dir(self)))
+            ifdrop = list(
+                filter(lambda item: item.startswith("clickedif"), dir(self)))
+            optionsdrop = list(filter(lambda item: item.startswith(
+                "clicked") and "if" not in item, dir(self)))
 
-        for i, (name, drop1, drop2) in enumerate(zip(clses, ifdrop, optionsdrop)):
-            cls = getattr(self, name)
-            drop1 = getattr(self, drop1)
-            drop2 = getattr(self, drop2)
+            for i, (name, drop1, drop2) in enumerate(zip(clses, ifdrop, optionsdrop)):
+                cls = getattr(self, name)
+                drop1 = getattr(self, drop1)
+                drop2 = getattr(self, drop2)
 
-            op1 = drop1.get()
+                op1 = drop1.get()
 
-            if op1 == "Do":
-                if cls.type == 1:
+                if op1 == "Do":
+                    if cls.type == 1:
+                        cls.save(file)
+                    elif cls.type == 2:
+                        cls.save(file)
+                    elif cls.type == 3:
+                        cls.save(file)
+                    elif cls.type == 4:
+                        cls.save(file)
+                elif op1 == "If":
                     cls.save(file)
-                elif cls.type == 2:
-                    cls.save(file)
-                elif cls.type == 3:
-                    cls.save(file)
-                elif cls.type == 4:
-                    cls.save(file)
-            elif op1 == "If":
-                cls.save(file)
-            else:
-                with open(file, "a") as f:
-                    f.write(f"{op1}\n")
+                else:
+                    with open(file, "a") as f:
+                        f.write(f"{op1}\n")
 
     def load(self):
         file = askopenfilename(initialdir="./saves/")
 
-        if file.endswith(".aafiles"):
-            self.clearTextWidget()
+        if not file == "":
+            if file.endswith(".aafiles"):
+                self.clearTextWidget()
 
-            with open(file) as f:
-                content = f.read()
+                with open(file) as f:
+                    content = f.read()
 
-            lines = content.split("\n")
-            self.text_widget_count = 0
+                lines = content.split("\n")
+                self.text_widget_count = 0
 
-            for line in lines:
-                if line != "":
-                    self.text_widget_count += 1
-                    if line.startswith("Do"):
-                        cls_type = int(line[3])
+                for line in lines:
+                    if line != "":
+                        self.text_widget_count += 1
+                        if line.startswith("Do"):
+                            cls_type = int(line[3])
 
-                        if cls_type == 1:
+                            if cls_type == 1:
+                                setattr(
+                                    self, f"clicked{self.text_widget_count}", StringVar())
+                                getattr(self, f"clicked{self.text_widget_count}").set(
+                                    "1 - Move Mouse")
+
+                                win = MouseNewWindow(self.root)
+                                setattr(
+                                    self, f"cls{self.text_widget_count}", win)
+
+                                win.load(line[3:])
+
+                            elif cls_type == 2:
+                                setattr(
+                                    self, f"clicked{self.text_widget_count}", StringVar())
+                                getattr(self, f"clicked{self.text_widget_count}").set(
+                                    "2 - Random Delay")
+
+                                win = RandomDelayWindow(self.root)
+                                setattr(
+                                    self, f"cls{self.text_widget_count}", win)
+
+                                win.load(line[3:])
+
+                            elif cls_type == 3:
+                                setattr(
+                                    self, f"clicked{self.text_widget_count}", StringVar())
+                                getattr(self, f"clicked{self.text_widget_count}").set(
+                                    "3 - Write Text")
+
+                                win = TextWindow(self.root)
+                                setattr(
+                                    self, f"cls{self.text_widget_count}", win)
+
+                                win.load(line[3:])
+
+                            setattr(
+                                self, f"clickedif{self.text_widget_count}", StringVar())
+                            getattr(self, f"clickedif{self.text_widget_count}").set(
+                                "Do")
+                            getattr(self, f"clickedif{self.text_widget_count}").trace(
+                                "w", lambda *args, val=self.text_widget_count: self.optionChanged(val))
+
+                            setattr(self, f"if{self.text_widget_count}", OptionMenu(self.root, getattr(
+                                self, f"clickedif{self.text_widget_count}"), "Do", "If", "Else", "End If", "End Else"))
+                            setattr(self, f"button{self.text_widget_count}", Button(
+                                text="Change Functionality", command=lambda val=self.text_widget_count: self.functionalityHandler(val)))
+                            setattr(self, f"dropdown{self.text_widget_count}", OptionMenu(self.root, getattr(
+                                self, f"clicked{self.text_widget_count}"), "1 - Move Mouse", "2 - Random Delay", "3 - Write Text"))
+
+                        elif line.startswith("If"):
+                            cls_type = int(line[3])
+
+                            if cls_type == 4:
+                                setattr(
+                                    self, f"clicked{self.text_widget_count}", StringVar())
+                                getattr(self, f"clicked{self.text_widget_count}").set(
+                                    "4 - Image Recogntion")
+
+                                win = ImageWindow(self.root)
+                                setattr(
+                                    self, f"cls{self.text_widget_count}", win)
+
+                                win.load(line[3:])
+
+                            setattr(
+                                self, f"clickedif{self.text_widget_count}", StringVar())
+                            getattr(self, f"clickedif{self.text_widget_count}").set(
+                                "If")
+                            getattr(self, f"clickedif{self.text_widget_count}").trace(
+                                "w", lambda *args, val=self.text_widget_count: self.optionChanged(val))
+
+                            setattr(self, f"if{self.text_widget_count}", OptionMenu(self.root, getattr(
+                                self, f"clickedif{self.text_widget_count}"), "Do", "If", "Else", "End If", "End Else"))
+                            setattr(self, f"button{self.text_widget_count}", Button(
+                                text="Change Functionality", command=lambda val=self.text_widget_count: self.functionalityHandler(val)))
+                            setattr(self, f"dropdown{self.text_widget_count}", OptionMenu(self.root, getattr(
+                                self, f"clicked{self.text_widget_count}"), "4 - Image Recogntion"))
+
+                        else:
                             setattr(
                                 self, f"clicked{self.text_widget_count}", StringVar())
                             getattr(self, f"clicked{self.text_widget_count}").set(
-                                "1 - Move Mouse")
+                                "None")
 
-                            win = MouseNewWindow(self.root)
+                            win = NoneWindow(self.root)
                             setattr(self, f"cls{self.text_widget_count}", win)
 
-                            win.load(line[3:])
-
-                        elif cls_type == 2:
                             setattr(
-                                self, f"clicked{self.text_widget_count}", StringVar())
-                            getattr(self, f"clicked{self.text_widget_count}").set(
-                                "2 - Random Delay")
+                                self, f"clickedif{self.text_widget_count}", StringVar())
+                            getattr(self, f"clickedif{self.text_widget_count}").set(
+                                line.strip())
+                            getattr(self, f"clickedif{self.text_widget_count}").trace(
+                                "w", lambda *args, val=self.text_widget_count: self.optionChanged(val))
 
-                            win = RandomDelayWindow(self.root)
-                            setattr(self, f"cls{self.text_widget_count}", win)
+                            setattr(self, f"if{self.text_widget_count}", OptionMenu(self.root, getattr(
+                                self, f"clickedif{self.text_widget_count}"), "Do", "If", "Else", "End If", "End Else"))
+                            setattr(self, f"button{self.text_widget_count}", Button(
+                                text="Change Functionality", command=lambda val=self.text_widget_count: self.functionalityHandler(val)))
+                            setattr(self, f"dropdown{self.text_widget_count}", OptionMenu(self.root, getattr(
+                                self, f"clicked{self.text_widget_count}"), "None"))
 
-                            win.load(line[3:])
+                        i = getattr(self, f"if{self.text_widget_count}")
+                        b = getattr(self, f"button{self.text_widget_count}")
+                        d = getattr(self, f"dropdown{self.text_widget_count}")
 
-                        elif cls_type == 3:
-                            setattr(
-                                self, f"clicked{self.text_widget_count}", StringVar())
-                            getattr(self, f"clicked{self.text_widget_count}").set(
-                                "3 - Write Text")
+                        if self.text_widget_count == 1:
+                            i.grid(row=self.text_widget_count + 2,
+                                   column=0, pady=(50, 10), padx=(10, 0))
+                            d.grid(row=self.text_widget_count +
+                                   2, column=1, pady=(50, 10))
+                            b.grid(row=self.text_widget_count +
+                                   2, column=2, pady=(50, 10))
+                        else:
+                            i.grid(row=self.text_widget_count + 2,
+                                   column=0, pady=(0, 10), padx=(10, 0))
+                            d.grid(row=self.text_widget_count +
+                                   2, column=1, pady=(0, 10))
+                            b.grid(row=self.text_widget_count +
+                                   2, column=2, pady=(0, 10))
 
-                            win = TextWindow(self.root)
-                            setattr(self, f"cls{self.text_widget_count}", win)
-
-                            win.load(line[3:])
-
-                        setattr(
-                            self, f"clickedif{self.text_widget_count}", StringVar())
-                        getattr(self, f"clickedif{self.text_widget_count}").set(
-                            "Do")
-                        getattr(self, f"clickedif{self.text_widget_count}").trace(
-                            "w", lambda *args, val=self.text_widget_count: self.optionChanged(val))
-
-                        setattr(self, f"if{self.text_widget_count}", OptionMenu(self.root, getattr(
-                            self, f"clickedif{self.text_widget_count}"), "Do", "If", "Else", "End If", "End Else"))
-                        setattr(self, f"button{self.text_widget_count}", Button(
-                            text="Change Functionality", command=lambda val=self.text_widget_count: self.functionalityHandler(val)))
-                        setattr(self, f"dropdown{self.text_widget_count}", OptionMenu(self.root, getattr(
-                            self, f"clicked{self.text_widget_count}"), "1 - Move Mouse", "2 - Random Delay", "3 - Write Text"))
-
-                    elif line.startswith("If"):
-                        cls_type = int(line[3])
-
-                        if cls_type == 4:
-                            setattr(
-                                self, f"clicked{self.text_widget_count}", StringVar())
-                            getattr(self, f"clicked{self.text_widget_count}").set(
-                                "4 - Image Recogntion")
-
-                            win = ImageWindow(self.root)
-                            setattr(self, f"cls{self.text_widget_count}", win)
-
-                            win.load(line[3:])
-
-                        setattr(
-                            self, f"clickedif{self.text_widget_count}", StringVar())
-                        getattr(self, f"clickedif{self.text_widget_count}").set(
-                            "If")
-                        getattr(self, f"clickedif{self.text_widget_count}").trace(
-                            "w", lambda *args, val=self.text_widget_count: self.optionChanged(val))
-
-                        setattr(self, f"if{self.text_widget_count}", OptionMenu(self.root, getattr(
-                            self, f"clickedif{self.text_widget_count}"), "Do", "If", "Else", "End If", "End Else"))
-                        setattr(self, f"button{self.text_widget_count}", Button(
-                            text="Change Functionality", command=lambda val=self.text_widget_count: self.functionalityHandler(val)))
-                        setattr(self, f"dropdown{self.text_widget_count}", OptionMenu(self.root, getattr(
-                            self, f"clicked{self.text_widget_count}"), "4 - Image Recogntion"))
-
-                    else:
-                        setattr(
-                            self, f"clicked{self.text_widget_count}", StringVar())
-                        getattr(self, f"clicked{self.text_widget_count}").set(
-                            "None")
-
-                        win = NoneWindow(self.root)
-                        setattr(self, f"cls{self.text_widget_count}", win)
-
-                        setattr(
-                            self, f"clickedif{self.text_widget_count}", StringVar())
-                        getattr(self, f"clickedif{self.text_widget_count}").set(
-                            line.strip())
-                        getattr(self, f"clickedif{self.text_widget_count}").trace(
-                            "w", lambda *args, val=self.text_widget_count: self.optionChanged(val))
-
-                        setattr(self, f"if{self.text_widget_count}", OptionMenu(self.root, getattr(
-                            self, f"clickedif{self.text_widget_count}"), "Do", "If", "Else", "End If", "End Else"))
-                        setattr(self, f"button{self.text_widget_count}", Button(
-                            text="Change Functionality", command=lambda val=self.text_widget_count: self.functionalityHandler(val)))
-                        setattr(self, f"dropdown{self.text_widget_count}", OptionMenu(self.root, getattr(
-                            self, f"clicked{self.text_widget_count}"), "None"))
-
-                    i = getattr(self, f"if{self.text_widget_count}")
-                    b = getattr(self, f"button{self.text_widget_count}")
-                    d = getattr(self, f"dropdown{self.text_widget_count}")
-
-                    if self.text_widget_count == 1:
-                        i.grid(row=self.text_widget_count + 2,
-                               column=0, pady=(50, 10), padx=(10, 0))
-                        d.grid(row=self.text_widget_count +
-                               2, column=1, pady=(50, 10))
-                        b.grid(row=self.text_widget_count +
-                               2, column=2, pady=(50, 10))
-                    else:
-                        i.grid(row=self.text_widget_count + 2,
-                               column=0, pady=(0, 10), padx=(10, 0))
-                        d.grid(row=self.text_widget_count +
-                               2, column=1, pady=(0, 10))
-                        b.grid(row=self.text_widget_count +
-                               2, column=2, pady=(0, 10))
-
-        else:
-            messagebox.showerror("Invaid File Type",
-                                 'The file is not a vaild type.')
+            else:
+                messagebox.showerror("Invaid File Type",
+                                     'The file is not a vaild type.')
 
     def run(self):
         ifstarted = False
